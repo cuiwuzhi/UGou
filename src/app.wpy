@@ -1,0 +1,128 @@
+<style lang="less">
+</style>
+
+<script>
+import wepy from 'wepy'
+import 'wepy-async-function'
+import '@/utils/baseApi'
+
+export default class extends wepy.app {
+  config = {
+    pages: [
+      'pages/tabs/home',
+      'pages/tabs/cates',
+      'pages/tabs/search',
+      'pages/tabs/cart',
+      'pages/tabs/me',
+      'pages/goods_detail/main', // 商品详情页面
+      'pages/goods_list'         // 商品列表页面
+    ],
+    window: {
+      backgroundTextStyle: 'dark',
+      navigationBarBackgroundColor: '#d81e06',
+      navigationBarTitleText: '优购商城',
+      navigationBarTextStyle: 'white'
+    },
+    tabBar: {
+      selectedColor: '#d81e06',
+      list: [
+        {
+          pagePath: 'pages/tabs/home',
+          text: '首页',
+          iconPath: '/assets/icons/home.png',
+          selectedIconPath: '/assets/icons/home-active.png'
+        },
+        {
+          pagePath: 'pages/tabs/cates',
+          text: '分类',
+          iconPath: '/assets/icons/category.png',
+          selectedIconPath: '/assets/icons/category-active.png'
+        },
+        {
+          pagePath: 'pages/tabs/search',
+          text: '搜索',
+          iconPath: '/assets/icons/search.png',
+          selectedIconPath: '/assets/icons/search-active.png'
+        },
+        {
+          pagePath: 'pages/tabs/cart',
+          text: '购物车',
+          iconPath: '/assets/icons/cart.png',
+          selectedIconPath: '/assets/icons/cart-active.png'
+        },
+        {
+          pagePath: 'pages/tabs/me',
+          text: '我的',
+          iconPath: '/assets/icons/me.png',
+          selectedIconPath: '/assets/icons/me-active.png'
+        }
+      ]
+    },
+    // 引用并注册全局组件
+    usingComponents: {
+      'van-badge': './assets/vant/badge/index', // 分类侧边栏组件
+      'van-badge-group': './assets/vant/badge-group/index',
+      'van-row': './assets/vant/row/index', // 布局Layout组件
+      'van-col': './assets/vant/col/index',
+      'van-search': './assets/vant/search/index', // 搜索框组件
+      'van-cell': './assets/vant/cell/index', // 单元格组件
+      'van-cell-group': './assets/vant/cell-group/index',
+      'van-icon': './assets/vant/icon/index', // icon图标
+      'van-tag': './assets/vant/tag/index', // tag标签
+      'van-card': './assets/vant/card/index', // 商品列表卡片组件
+      'van-tab': './assets/vant/tab/index', // tab标签页
+      'van-tabs': './assets/vant/tabs/index',
+      'wxparse': './assets/wxparse/wxparse', // 将HTML代码转换为wxml代码插件
+      'van-goods-action': './assets/vant/goods-action/index', // 商品导航组件
+      'van-goods-action-icon': './assets/vant/goods-action-icon/index',
+      'van-goods-action-button': './assets/vant/goods-action-button/index'
+    }
+  }
+
+  // 专门存储全局共享的数据，this.$parent.globalData访问
+  globalData = {
+    cart: []
+  }
+
+  constructor() {
+    super()
+    this.use('requestfix')
+    this.use('promisify')
+
+    // 拦截request请求
+    this.intercept('request', {
+      // 发出请求时的回调函数
+      config(p) {
+        wepy.showLoading({title: '数据加载中...'})
+        // 对所有request请求中的OBJECT参数对象统一附加时间戳属性
+        // p.timestamp = +new Date()
+        // 必须返回OBJECT参数对象，否则无法发送请求到服务端
+        return p
+      },
+
+      // 请求成功后的回调函数
+      success(p) {
+        // 可以在这里对收到的响应数据对象进行加工处理
+        // 必须返回响应数据对象，否则后续无法对响应数据进行处理
+        return p
+      },
+
+      // 请求失败后的回调函数
+      fail(p) {
+        wepy.baseToast()
+        // 必须返回响应数据对象，否则后续无法对响应数据进行处理
+        return p
+      },
+
+      // 请求完成时的回调函数(请求成功或失败都会被执行)
+      complete(p) {
+        wepy.hideLoading()
+      }
+    })
+  }
+
+  onLaunch() {
+    console.log('小程序启动了...')
+  }
+}
+</script>
