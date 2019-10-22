@@ -29,7 +29,7 @@ export default class extends wepy.mixin {
     },
     // 添加商品到购物车
     addToCart() {
-      console.log(this.$parent.globalData)
+      this.$parent.addGoodsToCart(this.goodsInfo)
       wepy.showToast({
         title: '已加入购物车',
         icon: 'success'

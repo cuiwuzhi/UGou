@@ -1,12 +1,111 @@
 <template>
-  <view>购物车</view>
+  <view>
+    <!-- 空的购物车 -->
+    <view class="empty-cart" wx:if="{{cartIsEmpty}}">
+      <image src="/assets/images/cart_empty@2x.png" />
+      <view class="tips">哎哟，购物车是空的噢~</view>
+    </view>
+    <!-- 购物车列表 -->
+    <view class="cart-container" wx:else>
+      <!-- 购物车标题 -->
+      <van-cell-group>
+        <van-cell title="购物车列表" icon="shop-o" />
+      </van-cell-group>
+      <!-- 购物车列表 -->
+      <scroll-view scroll-y class="cart-list-wrap">
+        <block wx:for="{{cart}}" wx:key="id">
+          <van-swipe-cell id="swipe-cell" right-width="{{80}}" async-close bind:close="onClose">
+              <van-card title="{{item.name}}">
+                <!-- 自定义描述区域 -->
+                <view slot="desc" class="desc">
+                  <text class="price">￥{{item.price}}</text>
+                  <van-stepper min="1" integer value="{{item.count}}" bind:change="countChanged" data-id="{{item.id}}" />
+                </view>
+                <!-- 复选框和缩略图区域 -->
+                <view slot="thumb">
+                  <van-checkbox value="{{item.isCheck}}"></van-checkbox>
+                  <image src="{{item.pic}}" class="thumb-img" />
+                </view>
+              </van-card>
+            <view slot="right">删除</view>
+          </van-swipe-cell>          
+        </block>
+      </scroll-view>      
+    </view>
+  </view>
 </template>
 
 <script>
 import wepy from 'wepy'
+import mixin from '@/mixins/tabs/cart'
 
-export default class extends wepy.page {}
+export default class extends wepy.page {
+  config = {
+    navigationBarTitleText: '购物车',
+    backgroundColor: '#eee'
+  }
+
+  mixins = [mixin]
+}
 </script>
 
 <style lang="less">
+.cart-list-wrap {
+  margin-top: 90rpx;
+  background-color: #eee;
+}
+.van-cell-group {
+  position: fixed !important;
+  width: 100%;
+  left: 0;
+  top: 0;
+  z-index: 9;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+.empty-cart {
+  font-size: 26rpx;
+  color: #666;
+  text-align: center;
+  padding-top: 200rpx;
+  image {
+    width: 180rpx;
+    height: 180rpx;
+  }
+  .tips {
+    margin-top: 10rpx;
+  }
+}
+.van-card {
+  background-color: #fff !important;
+  border-top: 1rpx solid #e3e3e3;
+  padding: 30rpx 40rpx 30rpx 15rpx !important;
+  .desc {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    .price {
+      font-size: 34rpx;
+      color: red;
+      font-weight: bold;
+    }
+  }
+  .thumb-img {
+    
+  }
+}
+.van-swipe-cell__left,
+.van-swipe-cell__right {
+  display: inline-block;
+  width: 100%;
+  // height: 44px;
+  font-size: 15px;
+  line-height: 241rpx;
+  color: #fff;
+  text-align: center;
+  background-color: #f44;
+}
 </style>
