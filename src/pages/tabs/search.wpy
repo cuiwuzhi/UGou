@@ -15,7 +15,7 @@
     <view wx:else>
       <view class="history-title">
         <text>搜索记录</text>
-        <van-icon name="delete" @tap="clearHistory" />
+        <van-icon name="delete" wx:if="{{!historyEmpty}}" @tap="clearHistory" />
       </view>
       <view class="history-body">
         <van-tag round size="large" class="tag" wx:for="{{kwList}}" wx:key="index" @tap="goGoodsList({{item}})">{{item}}</van-tag>
@@ -29,6 +29,11 @@ import wepy from 'wepy'
 import mixin from '@/mixins/tabs/search'
 
 export default class extends wepy.page {
+  config = {
+    navigationBarTitleText: '搜索商品',
+    backgroundColor: '#eee'
+  }
+
   mixins = [mixin]
 }
 </script>

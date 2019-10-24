@@ -15,7 +15,8 @@ export default class extends wepy.app {
       'pages/tabs/cart',
       'pages/tabs/me',
       'pages/goods_detail/main', // 商品详情页面
-      'pages/goods_list'         // 商品列表页面
+      'pages/goods_list',        // 商品列表页面
+      'pages/order'              // 订单页面
     ],
     window: {
       backgroundTextStyle: 'dark',
@@ -72,6 +73,7 @@ export default class extends wepy.app {
       'van-card': './assets/vant/card/index', // 商品列表卡片组件
       'van-tab': './assets/vant/tab/index', // tab标签页
       'van-tabs': './assets/vant/tabs/index',
+      'van-button': './assets/vant/button/index', // 按钮组件
       'wxparse': './assets/wxparse/wxparse', // 将HTML代码转换为wxml代码插件
       'van-goods-action': './assets/vant/goods-action/index', // 商品导航组件
       'van-goods-action-icon': './assets/vant/goods-action-icon/index',
@@ -85,7 +87,8 @@ export default class extends wepy.app {
 
   // 专门存储全局共享的数据，this.$parent.globalData访问
   globalData = {
-    cart: []
+    cart: [],  // 购物车商品列表
+    cartListTotal: 0  // 购物车商品数量
   }
 
   // 把商品添加到购物车中
@@ -130,6 +133,7 @@ export default class extends wepy.app {
   // 将购物车信息存储到storage持久化
   saveCartToStorage() {
     wepy.setStorageSync('cart', this.globalData.cart)
+    this.renderCartBadge()
   }
 
   // 删除商品项
@@ -138,6 +142,35 @@ export default class extends wepy.app {
     if (i !== -1) {
       this.globalData.cart.splice(i, 1)
       this.saveCartToStorage()
+    }
+  }
+
+  // 更新购物车中每件商品的选中状态
+  updateAllGoodsStatus(status) {
+    this.globalData.cart.forEach(x => {
+      x.isCheck = status
+    })
+    this.saveCartToStorage()
+  }
+
+  // 计算购物车角标数值
+  async renderCartBadge() {
+    // let c = 0
+    // this.globalData.cart.forEach(x => {
+    //   if (x.isCheck) {
+    //     c += x.count
+    //   }
+    // })
+    // 我这里的算法是只计算商品列表有多少项，而不是所有商品选择的数量之和
+    const num = this.globalData.cart.length
+    this.globalData.cartListTotal = num
+    if (num > 0) {
+      await wepy.setTabBarBadge({
+        index: 3,
+        text: num.toString()
+      }).catch(err => err)
+    } else {
+      await wepy.removeTabBarBadge({index: 3})
     }
   }
 
@@ -180,7 +213,10 @@ export default class extends wepy.app {
 
   onLaunch() {
     console.log('小程序启动了...')
+    // 初始化从缓存中获取购物车列表数据
     this.globalData.cart = wepy.getStorageSync('cart') || []
+    // 计算购物车角标数量
+    this.renderCartBadge()
   }
 }
 </script>

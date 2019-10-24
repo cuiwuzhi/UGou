@@ -32,6 +32,11 @@ import wepy from 'wepy'
 import minxin from '@/mixins/tabs/cates'
 
 export default class extends wepy.page {
+  config = {
+    navigationBarTitleText: '商品分类',
+    backgroundColor: '#eee'
+  }
+
   mixins = [minxin]
 }
 </script>

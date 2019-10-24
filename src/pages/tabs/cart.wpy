@@ -33,11 +33,13 @@
       </scroll-view>
       <!-- 提交订单 -->
       <van-submit-bar
-        price="{{ 3050 }}"
+        price="{{amount}}"
         button-text="提交订单"
-        bind:submit="onClickButton"
+        disabled="{{!amount}}"
+        bind:submit="submitOrder"
       >
-      
+        <!-- 全选/反选的复选框 -->
+        <van-checkbox bind:change="onFullCheckChanged" class="fullCheck" checked-color="#d81e06" value="{{isFullChecked}}">全选</van-checkbox>
       </van-submit-bar>
     </view>
   </view>
@@ -130,5 +132,8 @@ export default class extends wepy.page {
 }
 .van-submit-bar {
   box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05);
+}
+.fullCheck {
+  margin-left: 7px;
 }
 </style>

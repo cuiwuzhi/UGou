@@ -38,9 +38,14 @@ export default class extends wepy.mixin {
   }
 
   computed = {
+    // 收货地址动态渲染
     addressStr() {
       const addr = this.addressInfo
       return addr ? `${addr.provinceName}${addr.cityName}${addr.countyName}${addr.detailInfo}` : '请选择收货地址'
+    },
+    // 计算购物车商品数量
+    cartListCount() {
+      return this.$parent.globalData.cartListTotal || ''
     }
   }
 

@@ -61,8 +61,13 @@ export default class extends wepy.mixin {
   }
 
   computed = {
+    // 是否显示搜索的历史记录
     isShowHistory() {
       return this.searchValue.length <= 0
+    },
+    // 是否显示删除历史记录按钮
+    historyEmpty() {
+      return this.kwList.length <= 0
     }
   }
 
