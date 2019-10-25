@@ -1,0 +1,81 @@
+<template>
+  <view>
+    <!-- 轮播图 -->
+    <swiper indicator-dots autoplay circular interval="3000">
+      <swiper-item wx:for="{{swiperList}}" wx:key="index">
+        <navigator url="{{item.navigator_url}}" open-type="{{item.open_type}}" hover-class="none">
+          <image src="{{item.image_src}}" />
+        </navigator>
+      </swiper-item>
+    </swiper>
+    <!-- 分类 -->
+    <view class="cates">
+      <block wx:for="{{cateItems}}" wx:key="index">
+        <navigator url="/pages/tabs/cates" open-type="{{item.open_type}}" wx:if="{{item.navigator_url !== undexfined}}" hover-class="none">
+          <image src="{{item.image_src}}" />
+        </navigator>
+        <image wx:else src="{{item.image_src}}" />
+      </block>
+    </view>
+    <!-- 楼层展示 -->
+    <view class="floor-container">
+      <view class="floor-item" wx:for="{{floorData}}" wx:key="index">
+        <!-- 楼层标题 -->
+        <image class="floor-title" src="{{item.floor_title.image_src}}" />
+        <!-- 楼层内容图片 -->
+        <view class="floor-imgbox">
+          <image class="floor-item-pic" wx:for="{{item.product_list}}" wx:key="index" src="{{item.image_src}}" style="width: {{item.image_width}}rpx;"
+          @tap="goGoodsList({{item.navigator_url}})" />
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import mixin from '@/mixins/tabs/home'
+
+export default class extends wepy.page {
+  mixins = [mixin]
+}
+</script>
+
+<style lang="less">
+swiper {
+  height: 350rpx;
+  navigator, image {
+    height: 100%;
+    width: 100%;
+  }
+}
+.cates {
+  display: flex;
+  justify-content: space-around;
+  margin: 40rpx 0;
+  image {
+    width: 128rpx;
+    height: 140rpx;
+  }
+}
+.floor-container {
+  .floor-item {
+    .floor-title {
+      display: block;
+      height: 50rpx;
+      width: 640rpx;
+    }
+    .floor-imgbox {
+      .floor-item-pic {
+        float: left;
+        height: 190rpx;
+        margin: 8rpx;
+        margin-top: 0;
+        &:nth-child(1) {
+          height: 390rpx;
+        }
+      }
+    }
+  }
+}
+</style>

@@ -1,0 +1,222 @@
+<style lang="less">
+</style>
+
+<script>
+import wepy from 'wepy'
+import 'wepy-async-function'
+import '@/utils/baseApi'
+
+export default class extends wepy.app {
+  config = {
+    pages: [
+      'pages/tabs/home',
+      'pages/tabs/cates',
+      'pages/tabs/search',
+      'pages/tabs/cart',
+      'pages/tabs/me',
+      'pages/goods_detail/main', // 商品详情页面
+      'pages/goods_list',        // 商品列表页面
+      'pages/order'              // 订单页面
+    ],
+    window: {
+      backgroundTextStyle: 'dark',
+      navigationBarBackgroundColor: '#d81e06',
+      navigationBarTitleText: '优购商城',
+      navigationBarTextStyle: 'white'
+    },
+    tabBar: {
+      selectedColor: '#d81e06',
+      list: [
+        {
+          pagePath: 'pages/tabs/home',
+          text: '首页',
+          iconPath: '/assets/icons/home.png',
+          selectedIconPath: '/assets/icons/home-active.png'
+        },
+        {
+          pagePath: 'pages/tabs/cates',
+          text: '分类',
+          iconPath: '/assets/icons/category.png',
+          selectedIconPath: '/assets/icons/category-active.png'
+        },
+        {
+          pagePath: 'pages/tabs/search',
+          text: '搜索',
+          iconPath: '/assets/icons/search.png',
+          selectedIconPath: '/assets/icons/search-active.png'
+        },
+        {
+          pagePath: 'pages/tabs/cart',
+          text: '购物车',
+          iconPath: '/assets/icons/cart.png',
+          selectedIconPath: '/assets/icons/cart-active.png'
+        },
+        {
+          pagePath: 'pages/tabs/me',
+          text: '我的',
+          iconPath: '/assets/icons/me.png',
+          selectedIconPath: '/assets/icons/me-active.png'
+        }
+      ]
+    },
+    // 引用并注册全局组件
+    usingComponents: {
+      'van-badge': './assets/vant/badge/index', // 分类侧边栏组件
+      'van-badge-group': './assets/vant/badge-group/index',
+      'van-row': './assets/vant/row/index', // 布局Layout组件
+      'van-col': './assets/vant/col/index',
+      'van-search': './assets/vant/search/index', // 搜索框组件
+      'van-cell': './assets/vant/cell/index', // 单元格组件
+      'van-cell-group': './assets/vant/cell-group/index',
+      'van-icon': './assets/vant/icon/index', // icon图标
+      'van-tag': './assets/vant/tag/index', // tag标签
+      'van-card': './assets/vant/card/index', // 商品列表卡片组件
+      'van-tab': './assets/vant/tab/index', // tab标签页
+      'van-tabs': './assets/vant/tabs/index',
+      'van-button': './assets/vant/button/index', // 按钮组件
+      'wxparse': './assets/wxparse/wxparse', // 将HTML代码转换为wxml代码插件
+      'van-goods-action': './assets/vant/goods-action/index', // 商品导航组件
+      'van-goods-action-icon': './assets/vant/goods-action-icon/index',
+      'van-goods-action-button': './assets/vant/goods-action-button/index',
+      'van-stepper': './assets/vant/stepper/index', // 步进器组件
+      'van-swipe-cell': './assets/vant/swipe-cell/index', // 滑动单元格组件
+      'van-checkbox': './assets/vant/checkbox/index', // 复选框组件
+      'van-submit-bar': './assets/vant/submit-bar/index' // 提交订单栏组件
+    }
+  }
+
+  // 专门存储全局共享的数据，this.$parent.globalData访问
+  globalData = {
+    cart: [],  // 购物车商品列表
+    cartListTotal: 0  // 购物车商品数量
+  }
+
+  // 把商品添加到购物车中
+  addGoodsToCart(goods) {
+    const itemIndex = this.globalData.cart.findIndex(x => x.id === goods.goods_id)
+    if (itemIndex !== -1) {
+      this.globalData.cart[itemIndex].count++
+      this.saveCartToStorage()
+      return
+    }
+    // 组装购物车需要的信息
+    const info = {
+      id: goods.goods_id,
+      name: goods.goods_name,
+      pic: goods.goods_small_logo,
+      price: goods.goods_price,
+      count: 1,
+      isCheck: true
+    }
+    this.globalData.cart.unshift(info)
+    this.saveCartToStorage()
+  }
+
+  // 更新购物车商品的数量
+  updateGoodsCount(id, count) {
+    const i = this.globalData.cart.findIndex(x => x.id === id)
+    if (i !== -1) {
+      this.globalData.cart[i].count = count
+      this.saveCartToStorage()
+    }
+  }
+
+  // 更新商品选中状态
+  updateGoodsStatus(id, status) {
+    const i = this.globalData.cart.findIndex(x => x.id === id)
+    if (i !== -1) {
+      this.globalData.cart[i].isCheck = status
+      this.saveCartToStorage()
+    }
+  }
+
+  // 将购物车信息存储到storage持久化
+  saveCartToStorage() {
+    wepy.setStorageSync('cart', this.globalData.cart)
+    this.renderCartBadge()
+  }
+
+  // 删除商品项
+  removeGoodsById(id) {
+    const i = this.globalData.cart.findIndex(x => x.id === id)
+    if (i !== -1) {
+      this.globalData.cart.splice(i, 1)
+      this.saveCartToStorage()
+    }
+  }
+
+  // 更新购物车中每件商品的选中状态
+  updateAllGoodsStatus(status) {
+    this.globalData.cart.forEach(x => {
+      x.isCheck = status
+    })
+    this.saveCartToStorage()
+  }
+
+  // 计算购物车角标数值
+  async renderCartBadge() {
+    // let c = 0
+    // this.globalData.cart.forEach(x => {
+    //   if (x.isCheck) {
+    //     c += x.count
+    //   }
+    // })
+    // 我这里的算法是只计算商品列表有多少项，而不是所有商品选择的数量之和
+    const num = this.globalData.cart.length
+    this.globalData.cartListTotal = num
+    if (num > 0) {
+      await wepy.setTabBarBadge({
+        index: 3,
+        text: num.toString()
+      }).catch(err => err)
+    } else {
+      await wepy.removeTabBarBadge({index: 3})
+    }
+  }
+
+  constructor() {
+    super()
+    this.use('requestfix')
+    this.use('promisify')
+
+    // 拦截request请求
+    this.intercept('request', {
+      // 发出请求时的回调函数
+      config(p) {
+        wepy.showLoading({title: '数据加载中...'})
+        // 对所有request请求中的OBJECT参数对象统一附加时间戳属性
+        // p.timestamp = +new Date()
+        // 必须返回OBJECT参数对象，否则无法发送请求到服务端
+        return p
+      },
+
+      // 请求成功后的回调函数
+      success(p) {
+        // 可以在这里对收到的响应数据对象进行加工处理
+        // 必须返回响应数据对象，否则后续无法对响应数据进行处理
+        return p
+      },
+
+      // 请求失败后的回调函数
+      fail(p) {
+        wepy.baseToast()
+        // 必须返回响应数据对象，否则后续无法对响应数据进行处理
+        return p
+      },
+
+      // 请求完成时的回调函数(请求成功或失败都会被执行)
+      complete(p) {
+        wepy.hideLoading()
+      }
+    })
+  }
+
+  onLaunch() {
+    console.log('小程序启动了...')
+    // 初始化从缓存中获取购物车列表数据
+    this.globalData.cart = wepy.getStorageSync('cart') || []
+    // 计算购物车角标数量
+    this.renderCartBadge()
+  }
+}
+</script>

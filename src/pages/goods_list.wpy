@@ -1,0 +1,60 @@
+<template>
+  <view>
+    <!-- 商品列表 -->
+    <block wx:for="{{goodsList}}" wx:key="index">
+      <van-card @tap="goGoodsDetail({{item.goods_id}})" num="{{item.goods_number}}" price="{{item.goods_price}}" title="{{item.goods_name}}" thumb="{{item.goods_small_logo}}" />
+      <view class="sep-line"></view>
+    </block>
+    <!-- 加载完数据的提示信息 -->
+    <view class="over-line" space="ensp" hidden="{{!isover}}">———————  我是有底线的  ———————</view>
+    <!-- 每页列表数据的提示信息 -->
+    <view class="list-empty" wx:if="{{goodsList.length <= 0}}">
+      <van-icon name="shop-o" class="icon" />
+      <view class="txt">暂无数据哦！</view>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import mixin from '@/mixins/goods_list'
+
+export default class extends wepy.page {
+  config = {
+    navigationBarTitleText: '商品列表',
+    onReachBottomDistance: 80,
+    enablePullDownRefresh: true,
+    backgroundColor: '#eee'
+  }
+
+  mixins = [mixin]
+}
+</script>
+
+<style lang="less">
+.sep-line {
+  border-top: 1rpx solid #eee;
+}
+.over-line {
+  font-size: 24rpx;
+  text-align: center;
+  height: 60rpx;
+  line-height: 60rpx;
+  color: #ddd;
+}
+.list-empty {
+  text-align: center;
+  color: #ddd;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  font-size: 28rpx;
+  transform: translate(-50%, -50%);
+  .icon {
+    font-size: 200rpx;
+  }
+  .txt {
+    margin-left: 12rpx;
+  }
+}
+</style>

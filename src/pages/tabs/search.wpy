@@ -1,0 +1,60 @@
+<template>
+  <view>
+    <!-- 搜索框 -->
+    <van-search value="{{ searchValue }}" focus placeholder="请输入搜索关键词" show-action
+    bind:search="onSearch" bind:change="onChange" bind:cancel="onCancel" />
+    <!-- 搜索列表 -->
+      <van-cell-group wx:if="{{!isShowHistory}}">
+        <scroll-view scroll-y style="height: {{scrollHeight}}px;">
+          <block wx:for="{{suggestList}}" wx:key="index">
+            <van-cell title="{{item.goods_name}}" @tap="goGoodsDetail({{item.goods_id}})" />
+          </block>
+        </scroll-view>
+      </van-cell-group>
+    <!-- 历史搜索 -->
+    <view wx:else>
+      <view class="history-title">
+        <text>搜索记录</text>
+        <van-icon name="delete" wx:if="{{!historyEmpty}}" @tap="clearHistory" />
+      </view>
+      <view class="history-body">
+        <van-tag round size="large" class="tag" wx:for="{{kwList}}" wx:key="index" @tap="goGoodsList({{item}})">{{item}}</van-tag>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import mixin from '@/mixins/tabs/search'
+
+export default class extends wepy.page {
+  config = {
+    navigationBarTitleText: '搜索商品',
+    backgroundColor: '#eee'
+  }
+
+  mixins = [mixin]
+}
+</script>
+
+<style lang="less">
+.history-title {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 30rpx;
+  text:nth-child(1) {
+    font-size: 26rpx;
+    font-weight: bold;
+  }
+}
+.history-body {
+  .tag {
+    > view {
+      margin: 10rpx 20rpx;
+      padding-left: 20rpx;
+      padding-right: 20rpx;
+    }
+  }
+}
+</style>
