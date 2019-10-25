@@ -1,8 +1,20 @@
 <template>
   <view>
     <!-- 选择收货地址 -->
-    <view class="choose-address-box">
-      <van-button type="info" size="small">+ 选择收货地址</van-button>
+    <view wx:if="{{!isHaveAddress}}" class="choose-address-box">
+      <van-button type="info" size="small" @tap="chooseAddress">+ 选择收货地址</van-button>
+    </view>
+    <!-- 收货人信息 -->
+    <view wx:else class="address-box">
+      <view class="receiver-info" @tap="chooseAddress">
+        <text>收货人：{{addressInfo.userName}}</text>
+        <view>
+        <text>联系电话：{{addressInfo.telNumber}}</text><van-icon class="arrow" name="arrow" />
+        </view>
+      </view>
+      <view class="receiver-address">
+        收货地址：{{addressStr}}
+      </view>
     </view>
     <!-- 分割线 -->
     <view class="sep-line">
@@ -36,5 +48,22 @@ export default class extends wepy.page {
     height: 7px;
   }
 }
+.address-box {
+  font-size: 26rpx;
+  padding: 0 10rpx;
+  border-top: 1rpx solid #eee;
+  border-bottom: 1rpx solid #eee;
+  .receiver-info {
+    display: flex;
+    justify-content: space-between;
+    padding: 15rpx 0;
+    border-bottom: 1rpx solid #eee;
+    .arrow {
+      vertical-align: middle;
+    }
+  }
+  .receiver-address {
+    padding: 15rpx 0;
+  }
+}
 </style>
-
