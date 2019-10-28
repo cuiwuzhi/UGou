@@ -1,13 +1,33 @@
 <template>
-  <view>
+  <view class="order-wrap">
     <!-- 选择收货地址 -->
-    <view class="choose-address-box">
-      <van-button type="info" size="small">+ 选择收货地址</van-button>
+    <view wx:if="{{!isHaveAddress}}" class="choose-address-box">
+      <van-button type="info" size="small" @tap="chooseAddress">+ 选择收货地址</van-button>
+    </view>
+    <!-- 收货人信息 -->
+    <view wx:else class="address-box">
+      <view class="receiver-info" @tap="chooseAddress">
+        <text>收货人：{{addressInfo.userName}}</text>
+        <view>
+        <text>联系电话：{{addressInfo.telNumber}}</text><van-icon class="arrow" name="arrow" />
+        </view>
+      </view>
+      <view class="receiver-address">
+        收货地址：{{addressStr}}
+      </view>
     </view>
     <!-- 分割线 -->
     <view class="sep-line">
       <image src="/assets/images/cart_border@2x.png" />
     </view>
+    <!-- 订单商品列表 -->
+    <view class="goods-list">
+      <block wx:for="{{cart}}" wx:key="id">
+        <van-card num="{{item.count}}" price="{{item.price}}" title="{{item.name}}" thumb="{{item.pic}}"></van-card>
+      </block>
+    </view>
+    <!-- 登录后下单按钮 -->
+    <van-button open-type="getUserInfo" bindgetuserinfo="getUserInfo" type="primary" size="large" class="login-btn">登录后下单</van-button>
   </view>
 </template>
 
@@ -26,6 +46,9 @@ export default class extends wepy.page {
 </script>
 
 <style lang="less">
+.order-wrap {
+  margin-bottom: 60px;
+}
 .choose-address-box {
   text-align: center;
   padding: 60rpx 0;
@@ -36,5 +59,32 @@ export default class extends wepy.page {
     height: 7px;
   }
 }
+.address-box {
+  font-size: 26rpx;
+  padding: 0 10rpx;
+  border-top: 1rpx solid #eee;
+  border-bottom: 1rpx solid #eee;
+  .receiver-info {
+    display: flex;
+    justify-content: space-between;
+    padding: 15rpx 0;
+    border-bottom: 1rpx solid #eee;
+    .arrow {
+      vertical-align: middle;
+    }
+  }
+  .receiver-address {
+    padding: 15rpx 0;
+  }
+}
+.van-card {
+  border-bottom: 1rpx solid #eee;
+}
+.login-btn {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: 99;
+  width: 100%;
+}
 </style>
-
