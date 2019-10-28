@@ -47,7 +47,7 @@ export default class extends wepy.page {
 
 <style lang="less">
 .order-wrap {
-  margin-bottom: 60px;
+  padding-bottom: 60px;
 }
 .choose-address-box {
   text-align: center;
