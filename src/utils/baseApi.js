@@ -35,7 +35,10 @@ wepy.get = (url, data = {}) => {
 wepy.post = (url, data = {}) => {
   return wepy.request({
     url: baseUrl + url,
-    method: 'GET',
+    method: 'POST',
+    header: {
+      'content-type': 'application/x-www-form-urlencoded;charset=utf8'
+    },
     data
   })
 }
